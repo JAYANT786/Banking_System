@@ -127,7 +127,7 @@ body {
             Withdraw securely from your account
         </p>
 
-        <form method="POST">
+        <form method="POST" id="withdrawForm">
             {% csrf_token %}
 
             <!-- Amount -->
@@ -163,6 +163,7 @@ body {
     </div>
 
 </div>
+
 <script>
 
 // ⚡ Quick amount buttons
@@ -174,24 +175,26 @@ document.querySelectorAll(".quick-withdraw").forEach(btn => {
 });
 
 /* 🚀 WITHDRAW SUBMIT WITH SOUND */
-document.querySelector("form").addEventListener("submit", function(e) {
+const form = document.getElementById("withdrawForm");
 
-    e.preventDefault(); // ❌ stop immediate submit
+form.addEventListener("submit", function(e) {
+
+    e.preventDefault(); // stop instant submit
 
     let btn = document.querySelector(".submit-btn");
 
-    // 🔊 Play withdraw sound
+    // 🔊 Sound
     const audio = new Audio('/static/sounds/withdraw.mp3');
     audio.play().catch(err => console.log("Blocked:", err));
 
-    // ⏳ Button loading effect
+    // ⏳ Loading UI
     btn.innerHTML = "Processing...";
     btn.disabled = true;
 
-    // ⏳ Submit after delay
+    // ⏳ Delay then submit
     setTimeout(() => {
-        e.target.submit();
-    }, 400);
+        form.submit();
+    }, 500);
 
 });
 

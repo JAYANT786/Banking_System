@@ -118,7 +118,7 @@ body {
             Send money securely
         </p>
 
-        <form method="POST">
+        <form method="POST" id="transferForm">
             {% csrf_token %}
 
             <!-- Receiver -->
@@ -169,6 +169,7 @@ body {
 
 <!-- ⚡ Quick Amount Script -->
 <script>
+
 /* ⚡ Quick Amount */
 document.querySelectorAll(".quick-transfer").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -178,26 +179,28 @@ document.querySelectorAll(".quick-transfer").forEach(btn => {
 });
 
 /* 🚀 Transfer Submit with Sound */
-document.querySelector("form").addEventListener("submit", function(e) {
+const form = document.getElementById("transferForm");
 
-    e.preventDefault(); // ❌ stop immediate submit
+form.addEventListener("submit", function(e) {
+
+    e.preventDefault(); // stop instant submit
 
     let btn = document.querySelector(".submit-btn");
 
-    // 🔊 PLAY SOUND FIRST
+    // 🔊 Sound
     const audio = new Audio('/static/sounds/transfer.mp3');
-    audio.play().catch(err => console.log("Blocked:", err));
+    audio.play().catch(err => console.log("Sound blocked:", err));
 
     // 🎯 Loading UI
     btn.innerHTML = "Processing...";
     btn.disabled = true;
 
-    // ⏳ Submit after delay
+    // ⏳ Delay before submit
     setTimeout(() => {
-        e.target.submit();
-    }, 400); // 300–500ms best
+        form.submit();
+    }, 500);
 
 });
-</script>
 
+</script>
 {% endblock %}

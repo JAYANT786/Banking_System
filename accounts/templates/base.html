@@ -321,6 +321,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300); // 🔥 delay fixes Render/browser blocking
 
 });
+
+<!-- Global Sound Function -->
+function playSound(soundName) {
+    const audio = new Audio(`/static/sounds/${soundName}.mp3`);
+    audio.play().catch(err => console.log("Blocked:", err));
+}
 </script>
   </body>
 </html>

@@ -151,66 +151,50 @@ body {
 
 <script>
 
+const form = document.getElementById("otp-form");
 const inputs = document.querySelectorAll(".otp-box");
 const hiddenInput = document.getElementById("otp-full");
-const form = document.getElementById("otp-form");
 
-// Move to next box
-inputs.forEach((input, index) => {
-    input.addEventListener("input", () => {
-
-        input.value = input.value.replace(/[^0-9]/g, '');
-
-        if (input.value && index < inputs.length - 1) {
-            inputs[index + 1].focus();
-        }
-
-        updateOTP();
-    });
-
-    input.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace" && !input.value && index > 0) {
-            inputs[index - 1].focus();
-        }
-    });
-});
-
-// Collect OTP
 function updateOTP() {
     let otp = "";
     inputs.forEach(i => otp += i.value);
     hiddenInput.value = otp;
 }
 
-// 🚀 SUBMIT WITH SOUND + DELAY
-form.addEventListener("submit", function(e) {
+form.addEventListener("submit", async function(e) {
 
-    e.preventDefault(); // stop instant submit
+    e.preventDefault();
 
     updateOTP();
 
-    // ❌ Validation
     if (hiddenInput.value.length !== 6) {
         alert("Please enter full 6-digit OTP");
         return;
     }
 
-    // 🔊 PLAY SOUND
-    const audio = new Audio('/static/sounds/otp.mp3');
-    audio.play().catch(err => console.log("Autoplay blocked:", err));
-
-    // 🎯 Button loading
     let btn = form.querySelector("button");
     btn.innerHTML = "Verifying...";
     btn.disabled = true;
 
-    // ⏳ Delay before submit (IMPORTANT)
-    setTimeout(() => {
+    // 🔊 CREATE AUDIO
+    const audio = new Audio('/static/sounds/otp.mp3');
+
+    try {
+        await audio.play(); // ⬅️ IMPORTANT (ensures it plays before submit)
+
+        // ⏳ Slight delay AFTER sound starts
+        setTimeout(() => {
+            form.submit();
+        }, 300);
+
+    } catch (err) {
+        console.log("Sound blocked:", err);
+
+        // fallback → still submit
         form.submit();
-    }, 500);
+    }
 
 });
 
 </script>
-
 {% endblock %}
