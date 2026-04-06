@@ -133,9 +133,6 @@ body {
 
 </div>
 
-
-<p id="timer" class="text-warning mt-2">OTP expires in 60s</p>
-
 {% comment %} {% if messages %}
     {% for message in messages %}
         <div class="d-none message-tag" data-tag="{{ message.tags }}"></div>
@@ -144,23 +141,49 @@ body {
 
 
 <!-- 🔊 OTP SOUND -->
+
+
 <audio id="otpSound" preload="auto">
     <source src="{% static 'sounds/otp.mp3' %}" type="audio/mpeg">
 </audio>
 
 <script>
+function playOtpSound() {
+    const audio = document.getElementById("otpSound");
+    audio.volume = 1;
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    let audio = document.getElementById("otpSound");
-
-    // 🔊 PLAY SOUND ON PAGE LOAD (OTP page open)
     audio.play().catch(err => {
         console.log("Autoplay blocked:", err);
     });
+}
 
+let played = false;
+
+// ✅ ADD THIS HERE (inside same script)
+document.querySelector("input[name='otp']").addEventListener("input", () => {
+    if (!played) {
+        playOtpSound();
+        played = true;
+    }
 });
 
+let timeLeft = 60;
+const timerElement = document.getElementById("timer");
+
+const timer = setInterval(() => {
+
+    if (!timerElement) return;
+
+    timerElement.innerText = `OTP expires in ${timeLeft}s`;
+
+    timeLeft--;
+
+    if (timeLeft < 0) {
+        clearInterval(timer);
+        timerElement.innerText = "OTP expired";
+    }
+
+}, 1000);
 </script>
 
 {% endblock %}
