@@ -178,27 +178,21 @@ document.querySelectorAll(".quick-transfer").forEach(btn => {
     });
 });
 
-/* 🚀 Transfer Submit with Sound */
+/* 🚀 Transfer Submit (NO SOUND HERE) */
 const form = document.getElementById("transferForm");
 
 form.addEventListener("submit", function(e) {
 
-    e.preventDefault(); // stop instant submit
+    e.preventDefault(); // stop immediate submit
 
     let btn = document.querySelector(".submit-btn");
-
-    // 🔊 Sound
-    const audio = new Audio('/static/sounds/transfer.mp3');
-    audio.play().catch(err => console.log("Sound blocked:", err));
 
     // 🎯 Loading UI
     btn.innerHTML = "Processing...";
     btn.disabled = true;
 
-    // ⏳ Delay before submit
-    setTimeout(() => {
-        form.submit();
-    }, 500);
+    // ⏳ Submit to backend → OTP page
+    form.submit();
 
 });
 

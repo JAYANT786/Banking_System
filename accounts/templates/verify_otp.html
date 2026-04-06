@@ -152,23 +152,15 @@ body {
 <script>
 
 const form = document.getElementById("otp-form");
-const inputs = document.querySelectorAll(".otp-box");
-const hiddenInput = document.getElementById("otp-full");
-
-function updateOTP() {
-    let otp = "";
-    inputs.forEach(i => otp += i.value);
-    hiddenInput.value = otp;
-}
 
 form.addEventListener("submit", async function(e) {
 
     e.preventDefault();
 
-    updateOTP();
+    let otp = form.querySelector("input[name='otp']").value;
 
-    if (hiddenInput.value.length !== 6) {
-        alert("Please enter full 6-digit OTP");
+    if (otp.length !== 6) {
+        alert("Enter 6-digit OTP");
         return;
     }
 
@@ -176,25 +168,24 @@ form.addEventListener("submit", async function(e) {
     btn.innerHTML = "Verifying...";
     btn.disabled = true;
 
-    // 🔊 CREATE AUDIO
-    const audio = new Audio('/static/sounds/otp.mp3');
-
     try {
-        await audio.play(); // ⬅️ IMPORTANT (ensures it plays before submit)
+        // 🔊 PLAY SUCCESS SOUND BEFORE SUBMIT
+        const audio = new Audio('/static/sounds/transfer.mp3');
 
-        // ⏳ Slight delay AFTER sound starts
+        await audio.play();
+
+        // ⏳ small delay to let sound play
         setTimeout(() => {
             form.submit();
         }, 300);
 
     } catch (err) {
         console.log("Sound blocked:", err);
-
-        // fallback → still submit
-        form.submit();
+        form.submit(); // fallback
     }
 
 });
 
 </script>
+
 {% endblock %}

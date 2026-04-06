@@ -145,31 +145,18 @@ body {
 </audio>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    let timeLeft = 60;
-    let timerEl = document.getElementById("timer");
+    let audio = document.getElementById("otpSound");
 
-    if (!timerEl) return;
-
-    let timer = setInterval(() => {
-        timeLeft--;
-
-        timerEl.innerText = "OTP expires in " + timeLeft + "s";
-        
-        if (timeLeft < 20) {
-             timerEl.style.color = "red";
-        }
-
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            timerEl.innerText = "OTP expired ❌";
-            timerEl.classList.remove("text-warning");
-            timerEl.classList.add("text-danger");
-        }
-    }, 1000);
+    // 🔊 PLAY SOUND ON PAGE LOAD (OTP page open)
+    audio.play().catch(err => {
+        console.log("Autoplay blocked:", err);
+    });
 
 });
+
 </script>
 
 {% endblock %}
