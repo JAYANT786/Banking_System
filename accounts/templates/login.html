@@ -1,0 +1,213 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<style>
+
+/* 🌊 Background */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #6610f2, #20c997);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 🧊 Glass Card */
+.login-card {
+    width: 90%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    color: white;
+    animation: fadeUp 0.8s ease;
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+}
+
+/* ✨ Animation */
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(50px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ✨ Inputs */
+.form-control {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.form-control::placeholder {
+    color: #ddd;
+}
+
+.form-control:focus {
+    background: transparent;
+    border-color: #00c6ff;
+    box-shadow: 0 0 10px #00c6ff;
+    color: white;
+}
+
+/* 🔘 Button */
+.btn-login {
+    width: 100%;
+    border-radius: 30px;
+    padding: 12px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #00c6ff;
+}
+
+/* 👁 Toggle */
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 14px;
+    cursor: pointer;
+    color: #ccc;
+}
+
+/* 🔴 Error animation */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+.error-glow {
+    box-shadow: 0 0 15px red !important;
+}
+
+/* ✨ Links */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh">
+
+    <div id="login-card" class="login-card">
+
+        <h3 class="text-center mb-2">💳 MyBank</h3>
+        <p class="text-center mb-4 text-light">Secure Login Portal</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="form-floating mb-3">
+                <input type="text" name="username" class="form-control"
+                       id="username" placeholder="Username" required>
+                <label for="username">Username</label>
+            </div>
+
+            <!-- Password -->
+            <div class="form-floating mb-3 position-relative">
+                <input type="password" name="password"
+                       class="form-control" id="password"
+                       placeholder="Password" required>
+
+                <label for="password">Password</label>
+
+                <span class="toggle-eye" onclick="togglePassword()">
+                    <i class="bi bi-eye" id="eyeIcon"></i>
+                </span>
+            </div>
+
+            <!-- Button -->
+            <button class="btn btn-login mt-2">
+                🔐 Login
+            </button>
+        </form>
+
+        <!-- Forgot -->
+        <p class="text-center mt-3">
+            <a href="{% url 'forgot_password' %}" class="text-warning fw-bold">
+                Forgot Password?
+            </a>
+        </p>
+
+        <!-- Register -->
+        <p class="text-center mt-2">
+            Don't have an account?
+            <a href="/register/" class="text-white fw-bold">Register</a>
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+/* 👁 Toggle */
+function togglePassword() {
+    let pass = document.getElementById("password");
+    let icon = document.getElementById("eyeIcon");
+
+    if (pass.type === "password") {
+        pass.type = "text";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+        pass.type = "password";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
+    }
+}
+
+/* 🔴 Error Animation */
+window.addEventListener("load", () => {
+
+    const errorToast = document.querySelector('.toast.text-bg-danger');
+
+    if (errorToast) {
+        const card = document.getElementById("login-card");
+
+        if (card) {
+            card.classList.add("shake", "error-glow");
+
+            setTimeout(() => {
+                card.classList.remove("shake", "error-glow");
+            }, 500);
+        }
+    }
+
+});
+</script>
+
+{% endblock %}

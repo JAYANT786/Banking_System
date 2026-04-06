@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* 🌈 Background */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #6610f2, #20c997);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 🧊 Card */
+.otp-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    color: white;
+    animation: fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(50px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* 🔢 OTP Boxes */
+.otp-box {
+    width: 50px;
+    height: 55px;
+    text-align: center;
+    font-size: 22px;
+    margin: 5px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: transparent;
+    color: white;
+    transition: 0.3s;
+}
+
+.otp-box:focus {
+    border-color: #00c6ff;
+    box-shadow: 0 0 10px #00c6ff;
+    outline: none;
+    transform: scale(1.1);
+}
+
+/* 🔘 Button */
+.btn-verify {
+    border-radius: 30px;
+    padding: 12px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-verify:hover {
+    transform: scale(1.05);
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+
+    .otp-card {
+        padding: 20px;
+    }
+
+    .otp-box {
+        width: 42px;
+        height: 48px;
+        font-size: 18px;
+        margin: 3px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+}
+
+/* 📲 Tablet */
+@media (max-width: 768px) {
+    .otp-card {
+        max-width: 90%;
+    }
+}
+
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height:90vh;">
+
+    <div class="card otp-card p-4 text-center">
+
+        <h3 class="mb-3">🔐 Verify OTP</h3>
+
+        <!-- OTP Display (optional) -->
+        {% if otp %}
+        <p class="text-danger fw-bold">
+            Your OTP: {{ otp }}
+        </p>
+        {% endif %}
+
+        <p class="text-light mb-4">
+            Enter 6-digit OTP
+        </p>
+
+        <form method="POST" id="otp-form">
+            {% csrf_token %}
+
+            <!-- OTP INPUT BOXES -->
+            <div class="d-flex justify-content-center flex-wrap">
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+            </div>
+
+            <!-- Hidden input -->
+            <input type="hidden" name="otp" id="otp-full">
+
+            <button type="submit" class="btn btn-verify w-100 mt-4 text-white">
+                Verify OTP
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+const inputs = document.querySelectorAll(".otp-box");
+const hiddenInput = document.getElementById("otp-full");
+const form = document.getElementById("otp-form");
+
+// Auto move + restrict numbers
+inputs.forEach((input, index) => {
+
+    input.addEventListener("input", () => {
+        input.value = input.value.replace(/[^0-9]/g, '');
+
+        if (input.value && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+        }
+
+        updateOTP();
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !input.value && index > 0) {
+            inputs[index - 1].focus();
+        }
+    });
+
+});
+
+// Collect OTP
+function updateOTP() {
+    let otp = "";
+    inputs.forEach(i => otp += i.value);
+    hiddenInput.value = otp;
+}
+
+// Prevent incomplete submit
+form.addEventListener("submit", function(e) {
+    updateOTP();
+
+    if (hiddenInput.value.length !== 6) {
+        e.preventDefault();
+        alert("⚠️ Please enter full 6-digit OTP");
+    }
+});
+
+</script>
+
+{% endblock %}

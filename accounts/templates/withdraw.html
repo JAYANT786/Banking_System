@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* 🌈 Background */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #6610f2, #20c997);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 🧊 Glass Card */
+.withdraw-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    color: white;
+    animation: fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(50px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ✨ Input */
+.form-control {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 12px;
+}
+
+.form-control::placeholder {
+    color: #ddd;
+}
+
+.form-control:focus {
+    background: transparent;
+    border-color: #ff4d4d;
+    box-shadow: 0 0 10px #ff4d4d;
+    color: white;
+}
+
+/* 💰 Input group */
+.input-group-text {
+    border: none;
+}
+
+/* ⚡ Quick buttons */
+.quick-withdraw {
+    flex: 1;
+    margin: 0 3px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.quick-withdraw:hover {
+    transform: scale(1.05);
+}
+
+/* 🔘 Button */
+.submit-btn {
+    padding: 12px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,0,0,0.5);
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+
+    .withdraw-card {
+        padding: 20px !important;
+        border-radius: 20px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    .form-control {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+    }
+}
+
+/* 📲 Tablet */
+@media (max-width: 768px) {
+    .withdraw-card {
+        max-width: 90%;
+    }
+}
+
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height:90vh;">
+
+    <div class="card withdraw-card p-4">
+
+        <!-- Title -->
+        <h3 class="text-center text-danger mb-2">
+            <i class="bi bi-cash-stack"></i> Withdraw Money
+        </h3>
+
+        <p class="text-center text-light mb-4">
+            Withdraw securely from your account
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Amount -->
+            <label class="form-label">Enter Amount</label>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-danger text-white">₹</span>
+                <input 
+                    type="number" 
+                    name="amount" 
+                    id="amountInput"
+                    class="form-control" 
+                    placeholder="Enter amount"
+                    min="1"
+                    required
+                >
+            </div>
+
+            <!-- Quick Withdraw -->
+            <div class="d-flex mb-3">
+                <button type="button" class="btn btn-outline-light quick-withdraw">₹100</button>
+                <button type="button" class="btn btn-outline-light quick-withdraw">₹500</button>
+                <button type="button" class="btn btn-outline-light quick-withdraw">₹1000</button>
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-danger w-100 rounded-pill submit-btn">
+                <i class="bi bi-arrow-up-circle"></i> Withdraw Now
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+// ⚡ Quick amount buttons
+document.querySelectorAll(".quick-withdraw").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.getElementById("amountInput").value =
+            btn.innerText.replace("₹", "");
+    });
+});
+
+</script>
+
+{% endblock %}

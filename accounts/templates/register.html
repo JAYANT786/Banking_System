@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* 🌈 Background */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #6610f2, #20c997);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+    overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 🧊 Card */
+.register-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    color: white;
+    animation: fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ✨ Inputs */
+.form-control {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 12px;
+}
+
+.form-control::placeholder {
+    color: #ddd;
+}
+
+.form-control:focus {
+    background: transparent;
+    border-color: #00c6ff;
+    box-shadow: 0 0 12px #00c6ff;
+    color: white;
+}
+
+/* 🔘 Button */
+.btn-register {
+    width: 100%;
+    border-radius: 30px;
+    padding: 12px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-register:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 15px #00c6ff;
+}
+
+/* 🔐 Strength */
+.strength {
+    height: 5px;
+    border-radius: 5px;
+    background: #ccc;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0%;
+    transition: 0.3s;
+}
+
+/* ❌ Error */
+#error-box {
+    transition: opacity 0.5s ease;
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+
+    .register-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .btn-register {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* 📲 Tablet */
+@media (max-width: 768px) {
+    .register-card {
+        max-width: 90%;
+    }
+}
+
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height:85vh;">
+
+    <div class="register-card">
+
+        <h3 class="text-center mb-2">📝 MyBank</h3>
+        <p class="text-center mb-4 text-light">
+            Create secure account
+        </p>
+
+        {% if error %}
+        <div id="error-box" class="alert alert-danger text-center">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="mb-3">
+                <input type="text" name="username"
+                       class="form-control"
+                       placeholder="Username"
+                       required>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-2">
+                <input type="password" id="password1"
+                       name="password1"
+                       class="form-control"
+                       placeholder="Create password"
+                       oninput="checkStrength()"
+                       required>
+
+                <div class="strength">
+                    <div id="strength-bar" class="strength-bar"></div>
+                </div>
+            </div>
+
+            <!-- Confirm -->
+            <div class="mb-3">
+                <input type="password" id="password2"
+                       name="password2"
+                       class="form-control"
+                       placeholder="Confirm password"
+                       oninput="checkMatch()"
+                       required>
+
+                <small id="matchText"></small>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" id="submitBtn"
+                    class="btn btn-register text-white" disabled>
+                🚀 Create Account
+            </button>
+
+        </form>
+
+        <p class="text-center mt-3 text-light">
+            Already have an account?
+            <a href="/login/" class="text-white fw-bold text-decoration-underline">
+                Login
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+/* 🔐 Strength */
+function checkStrength() {
+    let pass = document.getElementById("password1").value;
+    let bar = document.getElementById("strength-bar");
+
+    let strength = 0;
+
+    if (pass.length > 5) strength += 25;
+    if (pass.length > 8) strength += 25;
+    if (/[A-Z]/.test(pass)) strength += 25;
+    if (/[0-9]/.test(pass)) strength += 25;
+
+    bar.style.width = strength + "%";
+
+    if (strength < 50) bar.style.background = "red";
+    else if (strength < 75) bar.style.background = "orange";
+    else bar.style.background = "lime";
+
+    checkMatch();
+}
+
+/* 🔁 Match */
+function checkMatch() {
+    let p1 = document.getElementById("password1").value;
+    let p2 = document.getElementById("password2").value;
+    let text = document.getElementById("matchText");
+    let btn = document.getElementById("submitBtn");
+
+    if (p1 === "" || p2 === "") {
+        text.innerText = "";
+        btn.disabled = true;
+        return;
+    }
+
+    if (p1 === p2) {
+        text.innerText = "✔ Passwords match";
+        text.style.color = "lightgreen";
+        btn.disabled = false;
+    } else {
+        text.innerText = "❌ Passwords do not match";
+        text.style.color = "red";
+        btn.disabled = true;
+    }
+}
+
+/* ⏳ Auto hide error */
+setTimeout(() => {
+    const errorBox = document.getElementById("error-box");
+    if (errorBox) {
+        errorBox.style.opacity = "0";
+        setTimeout(() => {
+            errorBox.style.display = "none";
+        }, 500);
+    }
+}, 2000);
+
+</script>
+
+{% endblock %}

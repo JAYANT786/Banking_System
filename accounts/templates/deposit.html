@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* 🌈 Background */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #20c997, #6610f2);
+    background-size: 300% 300%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 🧊 Glass Card */
+.deposit-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    color: white;
+    animation: fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ✨ Input */
+.form-control {
+    background: rgba(255, 255, 255, 0.2);  /* 👈 slight background */
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 12px;
+}
+
+/* 👇 VERY IMPORTANT */
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    border-color: #20c997;
+    box-shadow: 0 0 10px #20c997;
+}
+
+/* 👇 placeholder color */
+.form-control::placeholder {
+    color: #ddd;
+}
+
+/* 👇 FIX for number input arrows (optional) */
+input[type="number"] {
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: #ddd;
+}
+
+.form-control:focus {
+    border-color: #20c997;
+    box-shadow: 0 0 10px #20c997;
+    color: white;
+}
+
+/* 💰 Input group */
+.input-group-text {
+    border: none;
+}
+
+/* ⚡ Quick buttons */
+.quick-amt {
+    flex: 1;
+    margin: 0 4px;
+    border-radius: 20px;
+    transition: 0.3s;
+    font-size: 13px;
+}
+
+.quick-amt:hover {
+    background: #20c997;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* 🚀 Button */
+.submit-btn {
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 30px;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(32, 201, 151, 0.6);
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+    .deposit-card {
+        padding: 20px !important;
+        border-radius: 20px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+    }
+}
+
+/* 📲 Tablet */
+@media (max-width: 768px) {
+    .deposit-card {
+        max-width: 90%;
+    }
+}
+
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height:90vh;">
+
+    <div class="card deposit-card p-4 text-center">
+
+        <!-- Title -->
+        <h3 class="mb-2">💸 Deposit Money</h3>
+        <p class="text-light mb-4">Add money securely</p>
+
+        <!-- FORM -->
+        <form method="POST" id="depositForm">
+            {% csrf_token %}
+
+            <!-- Amount -->
+            <div class="mb-3">
+                <label class="form-label">Enter Amount</label>
+
+                <div class="input-group">
+                    <span class="input-group-text bg-success text-white">₹</span>
+                    <input 
+                        type="number" 
+                        name="amount" 
+                        id="amountInput"
+                        class="form-control" 
+                        placeholder="Enter amount"
+                        min="1"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Quick Buttons -->
+            <div class="d-flex mb-3">
+                <button type="button" class="btn btn-outline-light quick-amt">₹100</button>
+                <button type="button" class="btn btn-outline-light quick-amt">₹500</button>
+                <button type="button" class="btn btn-outline-light quick-amt">₹1000</button>
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-success w-100 submit-btn" id="submitBtn">
+                💰 Confirm Deposit
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ⚡ Quick Amount */
+document.querySelectorAll('.quick-amt').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('amountInput').value =
+            btn.innerText.replace("₹", "");
+    });
+});
+
+/* 🚀 Button Loading Effect */
+document.getElementById("depositForm").addEventListener("submit", function() {
+
+    let btn = document.getElementById("submitBtn");
+
+    btn.innerHTML = "Processing...";
+    btn.disabled = true;
+
+});
+
+</script>
+
+{% endblock %}
