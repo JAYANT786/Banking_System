@@ -99,6 +99,8 @@ body {
 
 </style>
 
+<body id="otp-page">
+
 <div class="container d-flex justify-content-center align-items-center" style="min-height:90vh;">
 
     <div class="card otp-card p-4 text-center">
@@ -157,7 +159,13 @@ form.addEventListener("submit", async function(e) {
 
     e.preventDefault();
 
-    let otp = form.querySelector("input[name='otp']").value;
+    // 🔥 collect OTP from 6 boxes
+    let inputs = form.querySelectorAll(".otp-box");
+    let otp = "";
+
+    inputs.forEach(input => otp += input.value);
+
+    document.getElementById("otp-full").value = otp;
 
     if (otp.length !== 6) {
         alert("Enter 6-digit OTP");
@@ -169,12 +177,11 @@ form.addEventListener("submit", async function(e) {
     btn.disabled = true;
 
     try {
-        // 🔊 PLAY SUCCESS SOUND BEFORE SUBMIT
-        const audio = new Audio('/static/sounds/transfer.mp3');
+        // 🔊 USE CORRECT OTP SOUND
+        const audio = new Audio('/static/sounds/success.mp3');
 
         await audio.play();
 
-        // ⏳ small delay to let sound play
         setTimeout(() => {
             form.submit();
         }, 300);

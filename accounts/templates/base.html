@@ -248,6 +248,9 @@ function launchConfetti() {
 
 /* 🎉 POPUP */
 function showPopup(message, type) {
+
+    if (document.body.id === "otp-page") return;
+
     let popup = document.getElementById("successPopup");
     let msg = document.getElementById("popupMessage");
     let title = document.getElementById("popupTitle");
@@ -263,8 +266,7 @@ function showPopup(message, type) {
         if (
             type.includes("success") ||
             type.includes("sound-deposit") ||
-            type.includes("sound-transfer") ||
-            type.includes("sound-withdraw")
+            type.includes("sound-transfer")
         ) {
             title.innerText = "Success!";
             icon.innerText = "✔";
@@ -273,8 +275,11 @@ function showPopup(message, type) {
             launchConfetti();
         }
 
-        // ❌ ERROR
-        else if (type.includes("error") || type.includes("sound-error")) {
+        // ❌ ERROR (IMPORTANT FIX)
+        else if (
+            type.includes("error") ||
+            type.includes("sound-error")
+        ) {
             title.innerText = "Error!";
             icon.innerText = "✖";
             icon.style.color = "#dc3545";
@@ -284,49 +289,29 @@ function showPopup(message, type) {
 
         setTimeout(() => {
             popup.style.display = "none";
-        }, 1200);
+        }, 1500);
 
     }, 50);
 }
-
 /* 🚀 STEP 3: Play sound AFTER redirect using Django messages */
 document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
 
-        document.querySelectorAll(".message-data").forEach((msg) => {
+        const messages = document.querySelectorAll(".message-data");
 
-            let text = msg.dataset.message;
-            let type = msg.dataset.tags;
+        if (messages.length === 0) return;
 
-            if (type.includes("sound-deposit")) {
-                playSound("deposit.mp3");
-                showPopup(text, type);
-            }
-            else if (type.includes("sound-withdraw")) {
-                playSound("withdraw.mp3");
-                showPopup(text, type);
-            }
-            else if (type.includes("sound-transfer")) {
-                playSound("transfer.mp3");
-                showPopup(text, type);
-            }
-            else if (type.includes("sound-error")) {
-                playSound("error.mp3");
-                showPopup(text, type);
-            }
+        const msg = messages[0];
 
-        });
+        let text = msg.dataset.message;
+        let type = msg.dataset.tags;
 
-    }, 300); // 🔥 delay fixes Render/browser blocking
+        showPopup(text, type);
+
+    }, 300);
 
 });
-
-<!-- Global Sound Function -->
-function playSound(soundName) {
-    const audio = new Audio(`/static/sounds/${soundName}.mp3`);
-    audio.play().catch(err => console.log("Blocked:", err));
-}
 </script>
   </body>
 </html>
