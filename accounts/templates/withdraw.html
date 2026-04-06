@@ -163,7 +163,6 @@ body {
     </div>
 
 </div>
-
 <script>
 
 // ⚡ Quick amount buttons
@@ -174,6 +173,27 @@ document.querySelectorAll(".quick-withdraw").forEach(btn => {
     });
 });
 
-</script>
+/* 🚀 WITHDRAW SUBMIT WITH SOUND */
+document.querySelector("form").addEventListener("submit", function(e) {
 
+    e.preventDefault(); // ❌ stop immediate submit
+
+    let btn = document.querySelector(".submit-btn");
+
+    // 🔊 Play withdraw sound
+    const audio = new Audio('/static/sounds/withdraw.mp3');
+    audio.play().catch(err => console.log("Blocked:", err));
+
+    // ⏳ Button loading effect
+    btn.innerHTML = "Processing...";
+    btn.disabled = true;
+
+    // ⏳ Submit after delay
+    setTimeout(() => {
+        e.target.submit();
+    }, 400);
+
+});
+
+</script>
 {% endblock %}

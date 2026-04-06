@@ -168,7 +168,6 @@ inputs.forEach((input, index) => {
         updateOTP();
     });
 
-    // Backspace support
     input.addEventListener("keydown", (e) => {
         if (e.key === "Backspace" && !input.value && index > 0) {
             inputs[index - 1].focus();
@@ -183,14 +182,33 @@ function updateOTP() {
     hiddenInput.value = otp;
 }
 
-// Prevent early submit (IMPORTANT FIX)
+// 🚀 SUBMIT WITH SOUND + DELAY
 form.addEventListener("submit", function(e) {
+
+    e.preventDefault(); // stop instant submit
+
     updateOTP();
 
+    // ❌ Validation
     if (hiddenInput.value.length !== 6) {
-        e.preventDefault(); // 🚫 stop wrong submit
         alert("Please enter full 6-digit OTP");
+        return;
     }
+
+    // 🔊 PLAY SOUND
+    const audio = new Audio('/static/sounds/otp.mp3');
+    audio.play().catch(err => console.log("Autoplay blocked:", err));
+
+    // 🎯 Button loading
+    let btn = form.querySelector("button");
+    btn.innerHTML = "Verifying...";
+    btn.disabled = true;
+
+    // ⏳ Delay before submit (IMPORTANT)
+    setTimeout(() => {
+        form.submit();
+    }, 500);
+
 });
 
 </script>

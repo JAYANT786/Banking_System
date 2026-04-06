@@ -169,11 +169,34 @@ body {
 
 <!-- ⚡ Quick Amount Script -->
 <script>
+/* ⚡ Quick Amount */
 document.querySelectorAll(".quick-transfer").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelector("input[name='amount']").value =
             btn.innerText.replace("₹", "");
     });
+});
+
+/* 🚀 Transfer Submit with Sound */
+document.querySelector("form").addEventListener("submit", function(e) {
+
+    e.preventDefault(); // ❌ stop immediate submit
+
+    let btn = document.querySelector(".submit-btn");
+
+    // 🔊 PLAY SOUND FIRST
+    const audio = new Audio('/static/sounds/transfer.mp3');
+    audio.play().catch(err => console.log("Blocked:", err));
+
+    // 🎯 Loading UI
+    btn.innerHTML = "Processing...";
+    btn.disabled = true;
+
+    // ⏳ Submit after delay
+    setTimeout(() => {
+        e.target.submit();
+    }, 400); // 300–500ms best
+
 });
 </script>
 

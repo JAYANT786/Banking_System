@@ -193,15 +193,26 @@ document.querySelectorAll('.quick-amt').forEach(btn => {
 });
 
 /* 🚀 Button Loading Effect */
-document.getElementById("depositForm").addEventListener("submit", function() {
+document.getElementById("depositForm").addEventListener("submit", function(e) {
+
+    e.preventDefault(); // ❌ stop immediate submit
 
     let btn = document.getElementById("submitBtn");
 
+    // 🔊 Play sound FIRST
+    const audio = new Audio('/static/sounds/deposit.mp3');
+    audio.play().catch(err => console.log(err));
+
+    // 🎯 Loading UI
     btn.innerHTML = "Processing...";
     btn.disabled = true;
 
-});
+    // ⏳ Submit AFTER short delay
+    setTimeout(() => {
+        e.target.submit();
+    }, 400); // 300–500ms is perfect
 
+});
 </script>
 
 {% endblock %}

@@ -201,16 +201,23 @@ let audioUnlocked = false;
 
 document.addEventListener("click", () => {
     if (!audioUnlocked) {
-        const dummy = new Audio();
-        dummy.play().catch(() => {});
+        const audio = new Audio();
+        audio.play().catch(() => {});
         audioUnlocked = true;
+        console.log("🔓 Audio Unlocked");
     }
 });
 
 /* 🔊 STEP 2: Play sound function */
 function playSound(file) {
     const audio = new Audio(`/static/sounds/${file}`);
-    audio.play().catch(err => console.log("Blocked:", err));
+    audio.volume = 1;
+
+    audio.play().then(() => {
+        console.log("🔊 Sound played:", file);
+    }).catch(err => {
+        console.log("❌ Sound blocked:", err);
+    });
 }
 
 /* 🎉 CONFETTI */
@@ -285,30 +292,33 @@ function showPopup(message, type) {
 /* 🚀 STEP 3: Play sound AFTER redirect using Django messages */
 document.addEventListener("DOMContentLoaded", () => {
 
-    document.querySelectorAll(".message-data").forEach((msg) => {
-        let text = msg.dataset.message;
-        let type = msg.dataset.tags;
+    setTimeout(() => {
 
-        if (type.includes("sound-deposit")) {
-            playSound("deposit.mp3");
-            showPopup(text, type);
-        }
-        else if (type.includes("sound-withdraw")) {
-            playSound("withdraw.mp3");
-            showPopup(text, type);
-        }
-        else if (type.includes("sound-transfer")) {
-            playSound("transfer.mp3");
-            showPopup(text, type);
-        }
-        else if (type.includes("sound-otp")) {
-            playSound("otp.mp3");
-        }
-        else if (type.includes("sound-error")) {
-            playSound("error.mp3");
-            showPopup(text, type);
-        }
-    });
+        document.querySelectorAll(".message-data").forEach((msg) => {
+
+            let text = msg.dataset.message;
+            let type = msg.dataset.tags;
+
+            if (type.includes("sound-deposit")) {
+                playSound("deposit.mp3");
+                showPopup(text, type);
+            }
+            else if (type.includes("sound-withdraw")) {
+                playSound("withdraw.mp3");
+                showPopup(text, type);
+            }
+            else if (type.includes("sound-transfer")) {
+                playSound("transfer.mp3");
+                showPopup(text, type);
+            }
+            else if (type.includes("sound-error")) {
+                playSound("error.mp3");
+                showPopup(text, type);
+            }
+
+        });
+
+    }, 300); // 🔥 delay fixes Render/browser blocking
 
 });
 </script>
