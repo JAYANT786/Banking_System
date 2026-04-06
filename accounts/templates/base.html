@@ -195,14 +195,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+/* 🔓 STEP 1: Unlock audio on first user interaction */
+let audioUnlocked = false;
 
-    <script>
-      function playSound(file) {
-        const audio = new Audio("{% static 'sounds/' %}" + file);
-        audio.play().catch((err) => console.log("Blocked:", err));
-      }
-      
-      function launchConfetti() {
+document.addEventListener("click", () => {
+    if (!audioUnlocked) {
+        const dummy = new Audio();
+        dummy.play().catch(() => {});
+        audioUnlocked = true;
+    }
+});
+
+/* 🔊 STEP 2: Play sound function */
+function playSound(file) {
+    const audio = new Audio(`/static/sounds/${file}`);
+    audio.play().catch(err => console.log("Blocked:", err));
+}
+
+/* 🎉 CONFETTI */
+function launchConfetti() {
     let duration = 1500;
     let end = Date.now() + duration;
 
@@ -227,13 +239,13 @@
     })();
 }
 
-      function showPopup(message, type) {
+/* 🎉 POPUP */
+function showPopup(message, type) {
     let popup = document.getElementById("successPopup");
     let msg = document.getElementById("popupMessage");
     let title = document.getElementById("popupTitle");
     let icon = document.getElementById("popupIcon");
 
-    // Reset
     popup.style.display = "none";
 
     setTimeout(() => {
@@ -241,19 +253,18 @@
         msg.innerText = message;
 
         // ✅ SUCCESS
-if (
-    type.includes("success") ||
-    type.includes("sound-deposit") ||
-    type.includes("sound-transfer") ||
-    type.includes("sound-withdraw")
-) {
-    title.innerText = "Success!";
-    icon.innerText = "✔";
-    icon.style.color = "#28a745";
+        if (
+            type.includes("success") ||
+            type.includes("sound-deposit") ||
+            type.includes("sound-transfer") ||
+            type.includes("sound-withdraw")
+        ) {
+            title.innerText = "Success!";
+            icon.innerText = "✔";
+            icon.style.color = "#28a745";
 
-    // 🎉 CONFETTI
-    launchConfetti();
-}
+            launchConfetti();
+        }
 
         // ❌ ERROR
         else if (type.includes("error") || type.includes("sound-error")) {
@@ -262,52 +273,44 @@ if (
             icon.style.color = "#dc3545";
         }
 
-        // Show popup
         popup.style.display = "flex";
 
-        // ✅ AUTO HIDE (FIX)
         setTimeout(() => {
             popup.style.display = "none";
-        }, 1000);
+        }, 1200);
 
     }, 50);
 }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".message-data").forEach((msg) => {
-          let text = msg.dataset.message;
-          let type = msg.dataset.tags;
+/* 🚀 STEP 3: Play sound AFTER redirect using Django messages */
+document.addEventListener("DOMContentLoaded", () => {
 
-          // 💸 Deposit
-          if (type.includes("sound-deposit")) {
+    document.querySelectorAll(".message-data").forEach((msg) => {
+        let text = msg.dataset.message;
+        let type = msg.dataset.tags;
+
+        if (type.includes("sound-deposit")) {
             playSound("deposit.mp3");
             showPopup(text, type);
-          }
-
-          // 💥 Withdraw
-          else if (type.includes("sound-withdraw")) {
+        }
+        else if (type.includes("sound-withdraw")) {
             playSound("withdraw.mp3");
             showPopup(text, type);
-          }
-
-          // 🚀 Transfer
-          else if (type.includes("sound-transfer")) {
+        }
+        else if (type.includes("sound-transfer")) {
             playSound("transfer.mp3");
             showPopup(text, type);
-          }
-
-          // 🔐 OTP
-          else if (type.includes("sound-otp")) {
+        }
+        else if (type.includes("sound-otp")) {
             playSound("otp.mp3");
-          }
-
-          // ❌ Error
-          else if (type.includes("sound-error")) {
+        }
+        else if (type.includes("sound-error")) {
             playSound("error.mp3");
             showPopup(text, type);
-          }
-        });
-      });
-    </script>
+        }
+    });
+
+});
+</script>
   </body>
 </html>
